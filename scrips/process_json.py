@@ -2,6 +2,7 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import csv
 
 
 class process_json:
@@ -9,8 +10,9 @@ class process_json:
         pass
         filenames = []
     
-    def get_filenames(self,dir):
-        files = os.listdir(dir)
+    def get_filenames(self,foldername):
+        #need foldername
+        files = os.listdir(foldername)
         # filenames = []
         # for file in files:
         #     print(file)
@@ -20,21 +22,34 @@ class process_json:
         #     fullname = os.path.join(source, filename)
         #     # print(fullname)
         # pass
-        self.filenames = files
+        # self.filenames = files
+        filenames = []
         out = open("./data/filenames.txt", "w")
         for file in files:
             filename, extension = os.path.splitext(file)
             # print(filename)
             # print(extension)  # 包括了点
-            fullname = os.path.join(dir, filename)
+            fullname = os.path.join(foldername, file)
+            # fullname = os.path.join(fullname,extension)
+            filenames.append(fullname)
             out.write(fullname+"\n")
-        return files
+        self.filenames = filenames
+        return filenames
 
     def read_all_file(self,filenames,gettime = True):
-        
+        #must to extract key informations,or just read is helpless
+        papers = []
+        for filename in  filenames:
+           self.read_single_file(filename,papers) 
+        return papers
+        pass
+    def load_as_txt(self,papers,txtname = "./data/all_data.txt"):
+        file = open(txtname,'w')
+        file.write(papers)
+        file.close()
         pass
 
-    def read_single_file(self,filename,papers = []):
+    def read_single_file(self,filename,papers = [],gettime = True):
         # papers = []
         i = 0
         try:
@@ -48,8 +63,9 @@ class process_json:
                         dic = json.loads(line)
                         papers.append(dic)
                         i = i+1
+            print("readdone")
         except FileNotFoundError:
-            print("ERROR")
+            print("FileNotFoundError")
         return papers
     def draw_geo(self,papers):
         geo_coordinate = []
@@ -64,10 +80,16 @@ class process_json:
 
 if __name__ == "__main__":
     filename = "./201206_tweets/activities_201206100000_201206100010.json"
-    foldername = "./201206_tweets"
+    foldername = "./201206_tweets/"
     json_processor = process_json()
     papers = json_processor.read_single_file(filename)
     filenames = json_processor.get_filenames(foldername)
-    json_processor.draw_geo(papers)
+    # json_processor.draw_geo(papers)
+    all_papers = json_processor.read_all_file(filenames)
     if("1a"<"1b"):
         print("1")
+    # papers = [[1,2],[3,4]]
+    # txtname = "./data/all_data.txt"
+    # file = open(txtname,'w')
+    # file.write(str(papers))
+    # file.close()
