@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import csv
-
+import pandas as pd
 
 class process_json:
     def __init__(self) -> None:
@@ -37,7 +37,7 @@ class process_json:
         return filenames
 
     def read_all_file(self,filenames,gettime = True):
-        #must to extract key informations,or just read is helpless
+        #must to extract key informations later,or just read is helpless
         papers = []
         for filename in  filenames:
            self.read_single_file(filename,papers) 
@@ -48,6 +48,12 @@ class process_json:
         file.write(papers)
         file.close()
         pass
+    
+    # def load_as_csv(self,papers,csvname = "./data/all_data.csv"):
+    #     file = open(csvname,'w')
+    #     file.write(papers)
+    #     file.close()
+    #     pass
 
     def read_single_file(self,filename,papers = [],gettime = True):
         # papers = []
@@ -61,12 +67,20 @@ class process_json:
                         # print("lenth =",len(line))
                         # print(i)
                         dic = json.loads(line)
+                        self.appendtime(filename,dic)
                         papers.append(dic)
                         i = i+1
             print("readdone")
         except FileNotFoundError:
             print("FileNotFoundError")
         return papers
+    def appendtime(self,filename,dic):
+        #1 白天，0黑夜
+        if filename>"./201206_tweets/activities_201206100800_201206100810.json" and filename<"./201206_tweets/activities_201206242000_201206242010.json":
+            dic.update({"time":1})
+        else: 
+            dic.update({"time":0})
+        pass
     def draw_geo(self,papers):
         geo_coordinate = []
         for line in papers:
@@ -78,14 +92,16 @@ class process_json:
         plt.scatter(geo_coordinate[:,0],geo_coordinate[:,1])
         pass
 
+#used for test
 if __name__ == "__main__":
-    filename = "./201206_tweets/activities_201206100000_201206100010.json"
+    # filename = "./201206_tweets/activities_201206100000_201206100010.json"
+    filename = "./201206_tweets/activities_201206241050_201206241100.json"
     foldername = "./201206_tweets/"
     json_processor = process_json()
     papers = json_processor.read_single_file(filename)
-    filenames = json_processor.get_filenames(foldername)
+    # filenames = json_processor.get_filenames(foldername)
     # json_processor.draw_geo(papers)
-    all_papers = json_processor.read_all_file(filenames)
+    # all_papers = json_processor.read_all_file(filenames)
     if("1a"<"1b"):
         print("1")
     # papers = [[1,2],[3,4]]
