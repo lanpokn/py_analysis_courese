@@ -69,8 +69,8 @@ class process_json:
                         dic = json.loads(line)
                         #TODO
                         if (dic !=None) and ("geo" in dic) and dic["geo"] !=None:
-                            if dic["geo"]["coordinates"][0]>51.525 and dic["geo"]["coordinates"][0]<51.550 :
-                                if dic["geo"]["coordinates"][1]>-0.07 and dic["geo"]["coordinates"][1]<0 :
+                            if dic["geo"]["coordinates"][0]>51.6 and dic["geo"]["coordinates"][0]<51.8 :
+                                if dic["geo"]["coordinates"][1]>-0.05 and dic["geo"]["coordinates"][1]<0 :
                                     self.appendtime(filename,dic)
                                     papers.append(dic)
                         i = i+1
