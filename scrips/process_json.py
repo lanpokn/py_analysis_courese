@@ -67,8 +67,11 @@ class process_json:
                         # print("lenth =",len(line))
                         # print(i)
                         dic = json.loads(line)
-                        self.appendtime(filename,dic)
-                        papers.append(dic)
+                        if (dic !=None) and ("geo" in dic) and dic["geo"] !=None:
+                            if dic["geo"]["coordinates"][0]>51.4 and dic["geo"]["coordinates"][0]<51.6 :
+                                if dic["geo"]["coordinates"][1]>-0.2 and dic["geo"]["coordinates"][1]<0 :
+                                    self.appendtime(filename,dic)
+                                    papers.append(dic)
                         i = i+1
             print("readdone")
         except FileNotFoundError:
@@ -76,21 +79,28 @@ class process_json:
         return papers
     def appendtime(self,filename,dic):
         #1 白天，0黑夜
-        if filename>"./201206_tweets/activities_201206100800_201206100810.json" and filename<"./201206_tweets/activities_201206242000_201206242010.json":
+        if filename>"../201206_tweets/activities_201206100800_201206100810.json" and filename<"../201206_tweets/activities_201206242000_201206242010.json":
             dic.update({"time":1})
         else: 
             dic.update({"time":0})
         pass
     def draw_geo(self,papers):
+        if papers == []:
+            return
         geo_coordinate = []
+        time = papers[0]["time"]
         for line in papers:
             if "geo" in line:
                 if line["geo"]!=None:
                     geo_coordinate.append(line["geo"]["coordinates"])
         geo_coordinate = np.array(geo_coordinate)
         # plt.switch_backend('agg')#non-gui backend
-        plt.scatter(geo_coordinate[:,0],geo_coordinate[:,1])
+        if papers[0]["time"] == 0:
+            plt.scatter(geo_coordinate[:,0],geo_coordinate[:,1],c='black')
+        else:
+            plt.scatter(geo_coordinate[:,0],geo_coordinate[:,1],c ='blue')   
         pass
+            
 
 #used for test
 if __name__ == "__main__":
@@ -99,6 +109,7 @@ if __name__ == "__main__":
     foldername = "./201206_tweets/"
     json_processor = process_json()
     papers = json_processor.read_single_file(filename)
+    json_processor.draw_geo(papers)
     # filenames = json_processor.get_filenames(foldername)
     # json_processor.draw_geo(papers)
     # all_papers = json_processor.read_all_file(filenames)
